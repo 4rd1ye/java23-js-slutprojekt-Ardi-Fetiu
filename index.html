@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Database</title>
+  <link rel="stylesheet" href="css/style.css" type="text/css">   
+</head>
+<body>
+    <h1>Movie Database</h1>
+
+    <div class="dropdown">
+        <button onclick="fetchTopRatedMovies()" id="top-rated-button">Top Rated</button>
+        <div id="top-rated-container" class="dropdown-content"></div>
+    </div>
+
+    <div class="dropdown">
+        <button onclick="fetchPopularMovies()" id="popular-button">Popular</button>
+        <div id="popular-container" class="dropdown-content"></div>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="movie-query" placeholder="Search for movies/tv series">
+        <button onclick="searchMovies()" id="movie-search-button">Search Movies/Tv Series</button>
+        <input type="text" id="person-query" placeholder="Search for persons">
+        <button onclick="searchPersons()" id="person-search-button">Search Persons</button>
+    </div>
+
+    <div id="search-results-container"></div>
+  <script src="js/script.js" defer></script>
+</body>
+</html>

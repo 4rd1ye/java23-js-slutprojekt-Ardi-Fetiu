@@ -15,7 +15,7 @@ async function fetchData(url) {
 }
 
 // Function to display movies or persons
-function displayItems(items, containerId, itemType, showType = false) {
+function displayItems(items, containerId, itemType, showType = false, showOverview = false) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
 
@@ -66,8 +66,8 @@ function displayItems(items, containerId, itemType, showType = false) {
 
         itemElement.appendChild(details);
 
-        // Append overview text only for movies and when searching for movies
-        if (itemType === 'movie' && showType && item.overview) {
+        // Append overview text only for movies and when showOverview is true
+        if (showOverview && itemType === 'movie' && item.overview) {
             const overview = document.createElement('p');
             overview.textContent = `Overview: ${item.overview}`;
             itemElement.appendChild(overview);
@@ -79,7 +79,6 @@ function displayItems(items, containerId, itemType, showType = false) {
             } else if (itemType === 'person') {
                 fetchPersonMovies(item.id);
             } else if (itemType === 'tv') {
-                // Handle click for TV series
                 fetchTVSeriesDetails(item.id);
             }
         });
@@ -87,7 +86,6 @@ function displayItems(items, containerId, itemType, showType = false) {
         container.appendChild(itemElement);
     });
 }
-
 
 // Function to fetch top rated movies
 async function fetchTopRatedMovies() {
@@ -117,7 +115,6 @@ async function searchMovies() {
     const url = `https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${query}`;
     try {
         const data = await fetchData(url);
-        // Filter out only movies and TV series from the search results
         const filteredResults = data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv');
         if (filteredResults.length === 0) {
             document.getElementById('search-results-container').innerHTML = 'Error: Nothing found.';
@@ -126,6 +123,7 @@ async function searchMovies() {
         }
     } catch (error) {
         console.error('Error searching for movies/TV series:', error);
+        document.getElementById('search-results-container').innerHTML = 'Error: Failed to fetch data.';
     }
 }
 
@@ -143,8 +141,10 @@ async function searchPersons() {
         }
     } catch (error) {
         console.error('Error searching for persons:', error);
+        document.getElementById('search-results-container').innerHTML = 'Error: Failed to fetch data.';
     }
 }
+
 // Function to fetch movie details
 async function fetchMovieDetails(movieId) {
     const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}`;
@@ -153,6 +153,7 @@ async function fetchMovieDetails(movieId) {
         displayMovieDetails(movieDetails);
     } catch (error) {
         console.error('Error fetching movie details:', error);
+        document.getElementById('search-results-container').innerHTML = 'Error: Failed to fetch data.';
     }
 }
 
@@ -161,10 +162,12 @@ async function fetchPersonMovies(personId) {
     const url = `https://api.themoviedb.org/3/person/${personId}/combined_credits?api_key=${API_KEY}`;
     try {
         const data = await fetchData(url);
-        const combinedCredits = [...data.cast, ...data.crew];
-        displayItems(combinedCredits, 'search-results-container', 'movie', true); 
+        const sortedCredits = data.cast.sort((a, b) => b.vote_average - a.vote_average);
+        const topCredits = sortedCredits.slice(0, 3);
+        displayItems(topCredits, 'search-results-container', 'movie', true); 
     } catch (error) {
         console.error('Error fetching person movies:', error);
+        document.getElementById('search-results-container').innerHTML = 'Error: Failed to fetch data.';
     }
 }
 
@@ -172,8 +175,14 @@ async function fetchPersonMovies(personId) {
 function init() {
     document.getElementById('top-rated-button').addEventListener('click', fetchTopRatedMovies);
     document.getElementById('popular-button').addEventListener('click', fetchPopularMovies);
-    document.getElementById('movie-search-button').addEventListener('click', searchMovies);
-    document.getElementById('person-search-button').addEventListener('click', searchPersons);
+    document.getElementById('movie-search-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        searchMovies();
+    });
+    document.getElementById('person-search-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        searchPersons();
+    });
 }
 
 init();

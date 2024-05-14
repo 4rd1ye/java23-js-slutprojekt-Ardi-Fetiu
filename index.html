@@ -20,10 +20,14 @@
     </div>
 
     <div class="search-container">
-        <input type="text" id="movie-query" placeholder="Search for movies/tv series">
-        <button onclick="searchMovies()" id="movie-search-button">Search Movies/Tv Series</button>
-        <input type="text" id="person-query" placeholder="Search for persons">
-        <button onclick="searchPersons()" id="person-search-button">Search Persons</button>
+        <form id="movie-search-form">
+            <input type="text" id="movie-query" placeholder="Search for movies/TV series">
+            <button type="submit" id="movie-search-button">Search Movies/TV Series</button>
+        </form>
+        <form id="person-search-form">
+            <input type="text" id="person-query" placeholder="Search for persons">
+            <button type="submit" id="person-search-button">Search Persons</button>
+        </form>
     </div>
 
     <div id="search-results-container"></div>
